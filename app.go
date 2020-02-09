@@ -33,7 +33,11 @@ func CreateApp() App {
 	return a
 }
 
-func SetupRoutes(a App) {
+func SetupRoutes(a App) http.Handler {
 	chain := noodle.New()
-	http.DefaultServeMux.Handle("/foo", chain.Then(a.FooHandler.Foo))
+
+	mux := http.NewServeMux()
+	mux.Handle("/foo", chain.Then(a.FooHandler.Foo))
+
+	return mux
 }
