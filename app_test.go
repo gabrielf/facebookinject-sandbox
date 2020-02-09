@@ -46,7 +46,7 @@ func TestAppWithMockDeps(t *testing.T) {
 	w := httptest.NewRecorder()
 
 	// This is how mock dependencies for this particular test is setup
-	mockDeps := MockDeps(func(deps *Deps) *Deps {
+	mockDeps := MockDeps(func(deps Deps) Deps {
 		deps.FooService = &MockFooService{
 			FooFunc: func() interface{} {
 				return "kaboom"

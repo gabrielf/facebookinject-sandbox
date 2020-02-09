@@ -20,7 +20,7 @@ type Deps struct {
 }
 
 // CreateApp uses Deps to inject all app handlers
-func CreateApp(deps *Deps) App {
+func CreateApp(deps Deps) App {
 	var g inject.Graph
 	var a App
 	err := g.Provide(
@@ -39,8 +39,8 @@ func CreateApp(deps *Deps) App {
 	return a
 }
 
-func ProdDeps() *Deps {
-	return &Deps{
+func ProdDeps() Deps {
+	return Deps{
 		FooService: &FooServiceImpl{},
 	}
 }
@@ -48,8 +48,8 @@ func ProdDeps() *Deps {
 // MockDeps return the default mock deps but these can be overridden by
 // providing one or more functions that get the chance to set their own
 // mocks.
-func MockDeps(alterDeps ...func(*Deps) *Deps) *Deps {
-	mockDeps := &Deps{
+func MockDeps(alterDeps ...func(Deps) Deps) Deps {
+	mockDeps := Deps{
 		FooService: &MockFooService{},
 	}
 	for _, alter := range alterDeps {
