@@ -16,11 +16,9 @@ type App struct {
 func CreateApp() App {
 	var g inject.Graph
 	var a App
-	var fsh FooHandler
 	var fss FooServiceImpl
 	err := g.Provide(
 		&inject.Object{Value: &a},
-		&inject.Object{Value: &fsh},
 		&inject.Object{Value: &fss},
 	)
 	if err != nil {
