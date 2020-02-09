@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	mux := SetupRoutes(CreateApp())
+	mux := SetupRoutes(CreateApp(ProdDeps()))
 	if err := http.ListenAndServe("0.0.0.0:1337", mux); err != nil {
 		_, _ = fmt.Fprintln(os.Stderr, err)
 		os.Exit(-1)
