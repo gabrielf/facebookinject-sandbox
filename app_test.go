@@ -1,7 +1,7 @@
 package main
 
 import (
-	"io/ioutil"
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -19,11 +19,8 @@ func TestAppWithProdDeps(t *testing.T) {
 	mux := SetupRoutes(CreateApp(ProdDeps()))
 	mux.ServeHTTP(w, r)
 
-	resp := w.Result()
-	body, err := ioutil.ReadAll(resp.Body)
-	g.Expect(err).ToNot(HaveOccurred())
-	g.Expect(resp.StatusCode).To(Equal(http.StatusOK))
-	g.Expect(string(body)).To(ContainSubstring(`"key":"value"`))
+	g.Expect(w.Code).To(Equal(http.StatusOK))
+	g.Expect(w.Body).To(ContainSubstring(`"key":"value"`))
 }
 
 func TestAppWithDefaultTestDeps(t *testing.T) {
@@ -51,8 +48,8 @@ func TestAppWithOverriddenTestDeps(t *testing.T) {
 	// This is how test dependencies are overridden
 	testDeps := TestDeps(func(deps Deps) Deps {
 		deps.FooService = &MockFooService{
-			FooFunc: func() interface{} {
-				return "kaboom"
+			FooFunc: func(context.Context) interface{} {
+				return "hello world"
 			},
 		}
 		return deps
@@ -61,9 +58,6 @@ func TestAppWithOverriddenTestDeps(t *testing.T) {
 	mux := SetupRoutes(CreateApp(testDeps))
 	mux.ServeHTTP(w, r)
 
-	resp := w.Result()
-	body, err := ioutil.ReadAll(resp.Body)
-	g.Expect(err).ToNot(HaveOccurred())
-	g.Expect(resp.StatusCode).To(Equal(http.StatusOK))
-	g.Expect(string(body)).To(ContainSubstring(`"kaboom"`))
+	g.Expect(w.Code).To(Equal(http.StatusOK))
+	g.Expect(w.Body).To(ContainSubstring(`"hello world"`))
 }
