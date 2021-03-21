@@ -63,11 +63,11 @@ func TestDeps(alterDeps ...func(Deps) Deps) Deps {
 // This includes persistence, logger, error reporter, message queues etc.
 func DefaultTestDeps() Deps {
 	DefaultMocks = &MockDeps{
-		InMemoryLogger: &InMemoryLogger{},
+		Logger: &InMemoryLogger{},
 	}
 
 	deps := ProdDeps()
-	deps.Logger = DefaultMocks.InMemoryLogger
+	deps.Logger = DefaultMocks.Logger
 	return deps
 }
 
@@ -77,7 +77,7 @@ func DefaultTestDeps() Deps {
 var DefaultMocks *MockDeps
 
 type MockDeps struct {
-	InMemoryLogger *InMemoryLogger
+	Logger *InMemoryLogger
 }
 
 func SetupRoutes(a App) http.Handler {

@@ -33,8 +33,8 @@ func TestAppWithDefaultTestDeps(t *testing.T) {
 	mux.ServeHTTP(w, r)
 
 	// Access the default mocks via the global var DefaultMocks
-	g.Expect(DefaultMocks.InMemoryLogger.entries).To(HaveLen(1))
-	g.Expect(DefaultMocks.InMemoryLogger.entries).To(ContainElement(MatchFields(IgnoreExtras, Fields{
+	g.Expect(DefaultMocks.Logger.entries).To(HaveLen(1))
+	g.Expect(DefaultMocks.Logger.entries).To(ContainElement(MatchFields(IgnoreExtras, Fields{
 		"Level": Equal("info"),
 	})))
 }
