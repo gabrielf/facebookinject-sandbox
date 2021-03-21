@@ -13,14 +13,14 @@ import (
 func TestAppWithProdDeps(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	r := httptest.NewRequest("GET", "http://example.com/foo", nil)
+	r := httptest.NewRequest("GET", "http://example.com/foo?input=baz", nil)
 	w := httptest.NewRecorder()
 
 	mux := SetupRoutes(CreateApp(ProdDeps()))
 	mux.ServeHTTP(w, r)
 
 	g.Expect(w.Code).To(Equal(http.StatusOK))
-	g.Expect(w.Body).To(ContainSubstring(`"key":"value"`))
+	g.Expect(w.Body.String()).To(ContainSubstring(`{"input":"baz"}`))
 }
 
 func TestAppWithDefaultTestDeps(t *testing.T) {
@@ -42,13 +42,14 @@ func TestAppWithDefaultTestDeps(t *testing.T) {
 func TestAppWithOverriddenTestDeps(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	r := httptest.NewRequest("GET", "http://example.com/foo", nil)
+	r := httptest.NewRequest("GET", "http://example.com/foo?input=baz", nil)
 	w := httptest.NewRecorder()
 
 	// This is how test dependencies are overridden
 	testDeps := TestDeps(func(deps Deps) Deps {
 		deps.FooService = &MockFooService{
-			FooFunc: func(context.Context) interface{} {
+			FooFunc: func(_ context.Context, input string) interface{} {
+				g.Expect(input).To(Equal("baz"))
 				return "hello world"
 			},
 		}
@@ -59,5 +60,5 @@ func TestAppWithOverriddenTestDeps(t *testing.T) {
 	mux.ServeHTTP(w, r)
 
 	g.Expect(w.Code).To(Equal(http.StatusOK))
-	g.Expect(w.Body).To(ContainSubstring(`"hello world"`))
+	g.Expect(w.Body.String()).To(ContainSubstring(`"hello world"`))
 }

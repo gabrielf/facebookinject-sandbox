@@ -5,11 +5,11 @@ import (
 )
 
 type MockFooService struct {
-	FooFunc func(context.Context) interface{}
+	FooFunc func(context.Context, string) interface{}
 }
 
-func (mfs MockFooService) Foo(ctx context.Context) interface{} {
-	return mfs.FooFunc(ctx)
+func (mfs MockFooService) Foo(ctx context.Context, input string) interface{} {
+	return mfs.FooFunc(ctx, input)
 }
 
 type InMemoryLogger struct {
