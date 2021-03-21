@@ -16,6 +16,7 @@ type App struct {
 
 // Deps contain all the services and other dependencies such as logger, stores etc
 type Deps struct {
+	Logger     Logger
 	FooService FooService
 }
 
@@ -25,6 +26,7 @@ func CreateApp(deps Deps) App {
 	var a App
 	err := g.Provide(
 		&inject.Object{Value: &a},
+		&inject.Object{Value: deps.Logger},
 		&inject.Object{Value: deps.FooService},
 	)
 	if err != nil {
@@ -41,6 +43,7 @@ func CreateApp(deps Deps) App {
 
 func ProdDeps() Deps {
 	return Deps{
+		Logger:     &StdoutLogger{},
 		FooService: &FooServiceImpl{},
 	}
 }
@@ -50,6 +53,7 @@ func ProdDeps() Deps {
 // mocks.
 func MockDeps(alterDeps ...func(Deps) Deps) Deps {
 	mockDeps := Deps{
+		Logger:     &InMemoryLogger{},
 		FooService: &MockFooService{},
 	}
 	for _, alter := range alterDeps {
