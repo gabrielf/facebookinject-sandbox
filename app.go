@@ -48,18 +48,36 @@ func ProdDeps() Deps {
 	}
 }
 
-// MockDeps return the default mock deps but these can be overridden by
-// providing one or more functions that get the chance to set their own
-// mocks.
-func MockDeps(alterDeps ...func(Deps) Deps) Deps {
-	mockDeps := Deps{
-		Logger:     &InMemoryLogger{},
-		FooService: &MockFooService{},
-	}
+// TestDeps return the default test deps but allows these to be overridden by
+// one or more functions that get the chance to set their own dependencies.
+func TestDeps(alterDeps ...func(Deps) Deps) Deps {
+	testDeps := DefaultTestDeps()
 	for _, alter := range alterDeps {
-		mockDeps = alter(mockDeps)
+		testDeps = alter(testDeps)
 	}
-	return mockDeps
+	return testDeps
+}
+
+// DefaultTestDeps returns the prod deps but tries to replace all dependencies
+// that talk to external systems have been replaced with their mock equivalents.
+// This includes persistence, logger, error reporter, message queues etc.
+func DefaultTestDeps() Deps {
+	DefaultMocks = &MockDeps{
+		InMemoryLogger: &InMemoryLogger{},
+	}
+
+	deps := ProdDeps()
+	deps.Logger = DefaultMocks.InMemoryLogger
+	return deps
+}
+
+// DefaultMocks contains the mock deps as set by DefaultTestDeps. This makes
+// it possible to access these mocks in tests to verify interactions.
+// Unfortunately this makes parallel tests impossible as it is a global var.
+var DefaultMocks *MockDeps
+
+type MockDeps struct {
+	InMemoryLogger *InMemoryLogger
 }
 
 func SetupRoutes(a App) http.Handler {
