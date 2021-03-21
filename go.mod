@@ -4,8 +4,13 @@ go 1.13
 
 require (
 	github.com/andviro/noodle v0.0.0-20151111134638-c8187078919a
+	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/facebookgo/ensure v0.0.0-20200202191622-63f1cf65ac4c // indirect
 	github.com/facebookgo/inject v0.0.0-20180706035515-f23751cae28b
+	github.com/facebookgo/stack v0.0.0-20160209184415-751773369052 // indirect
 	github.com/facebookgo/structtag v0.0.0-20150214074306-217e25fb9691 // indirect
+	github.com/facebookgo/subset v0.0.0-20200203212716-c811ad88dec4 // indirect
 	github.com/onsi/gomega v1.9.0
-	golang.org/x/net v0.0.0-20200202094626-16171245cfb2
+	golang.org/x/net v0.0.0-20200202094626-16171245cfb2 // indirect
+	gopkg.in/tylerb/is.v1 v1.1.2 // indirect
 )
