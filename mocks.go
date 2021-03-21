@@ -31,3 +31,11 @@ func (l *InMemoryLogger) Infow(_ context.Context, msg string, keysAndVals ...int
 		KeysAndVals: keysAndVals,
 	})
 }
+
+type InMemoryErrorReporter struct {
+	Errors []error
+}
+
+func (e *InMemoryErrorReporter) ReportError(err error) {
+	e.Errors = append(e.Errors, err)
+}

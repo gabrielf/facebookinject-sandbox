@@ -37,6 +37,8 @@ func TestAppWithDefaultTestDeps(t *testing.T) {
 	g.Expect(DefaultMocks.Logger.entries).To(ContainElement(MatchFields(IgnoreExtras, Fields{
 		"Level": Equal("info"),
 	})))
+	g.Expect(DefaultMocks.ErrorReporter.Errors).To(HaveLen(1))
+	g.Expect(DefaultMocks.ErrorReporter.Errors[0].Error()).To(ContainSubstring("empty input"))
 }
 
 func TestAppWithOverriddenTestDeps(t *testing.T) {

@@ -17,6 +17,7 @@ type App struct {
 // Deps contain all the services and other dependencies such as logger, stores etc
 // Order deps alphabetically to avoid having to think when adding one.
 type Deps struct {
+	ErrorReporter ErrorReporter
 	FooService FooService
 	Logger     Logger
 }
@@ -27,6 +28,7 @@ func CreateApp(deps Deps) App {
 	var a App
 	err := g.Provide(
 		&inject.Object{Value: &a},
+		&inject.Object{Value: deps.ErrorReporter},
 		&inject.Object{Value: deps.FooService},
 		&inject.Object{Value: deps.Logger},
 	)
@@ -44,6 +46,7 @@ func CreateApp(deps Deps) App {
 
 func ProdDeps() Deps {
 	return Deps{
+		ErrorReporter: &StdoutErrorReporter{},
 		FooService: &FooServiceImpl{},
 		Logger:     &StdoutLogger{},
 	}
@@ -64,11 +67,13 @@ func TestDeps(alterDeps ...func(Deps) Deps) Deps {
 // This includes persistence, logger, error reporter, message queues etc.
 func DefaultTestDeps() Deps {
 	DefaultMocks = &MockDeps{
-		Logger: &InMemoryLogger{},
+		ErrorReporter: &InMemoryErrorReporter{},
+		Logger:        &InMemoryLogger{},
 	}
 
 	deps := ProdDeps()
 	deps.Logger = DefaultMocks.Logger
+	deps.ErrorReporter = DefaultMocks.ErrorReporter
 	return deps
 }
 
@@ -78,7 +83,8 @@ func DefaultTestDeps() Deps {
 var DefaultMocks *MockDeps
 
 type MockDeps struct {
-	Logger *InMemoryLogger
+	ErrorReporter *InMemoryErrorReporter
+	Logger        *InMemoryLogger
 }
 
 func SetupRoutes(a App) http.Handler {
