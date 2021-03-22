@@ -17,6 +17,7 @@ type App struct {
 // Deps contain all the services and other dependencies such as logger, stores etc
 // Order deps alphabetically to avoid having to think when adding one.
 type Deps struct {
+	BarService BarService
 	FooService FooService
 	Logger     Logger
 }
@@ -27,6 +28,7 @@ func CreateApp(deps Deps) App {
 	var a App
 	err := g.Provide(
 		&inject.Object{Value: &a},
+		&inject.Object{Value: deps.BarService},
 		&inject.Object{Value: deps.FooService},
 		&inject.Object{Value: deps.Logger},
 	)
@@ -44,6 +46,7 @@ func CreateApp(deps Deps) App {
 
 func ProdDeps() Deps {
 	return Deps{
+		BarService: &BarServiceImpl{},
 		FooService: &FooServiceImpl{},
 		Logger:     &StdoutLogger{},
 	}

@@ -16,3 +16,15 @@ func (fs FooServiceImpl) Foo(ctx context.Context, input string) interface{} {
 		"input": input,
 	}
 }
+
+type BarService interface {
+	Bar(context.Context)
+}
+
+type BarServiceImpl struct {
+	Logger Logger `inject:""`
+}
+
+func (bs BarServiceImpl) Bar(ctx context.Context) {
+	bs.Logger.Infow(ctx, "Bar called")
+}
